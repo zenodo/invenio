@@ -41,6 +41,7 @@ from .types import GUID, MarshalBinary, PickleBinary
 from .utils import get_model_type
 
 
+
 def _include_sqlalchemy(obj, engine=None):
     """Init all required SQLAlchemy's types."""
     # for module in sqlalchemy, sqlalchemy.orm:
@@ -114,22 +115,6 @@ def compile_varbinary(element, compiler, **kw):
     return 'BYTEA'
 
 
-class PasswordComparator(Comparator):
-
-    """Implement a password comparator."""
-
-    def __eq__(self, other):
-        """Implement the equal operator."""
-        return self.__clause_element__() == self.hash(other)
-
-    def hash(self, password):
-        """Generate a hashed version of the password."""
-        if db.engine.name != 'mysql':
-            return md5(password).digest()
-        email = self.__clause_element__().table.columns.email
-        return db.func.aes_encrypt(email, password)
-
-
 def autocommit_on_checkin(dbapi_con, con_record):
     """Call autocommit on raw mysql connection for fixing bug in MySQL 5.5."""
     try:
@@ -147,8 +132,6 @@ def autocommit_on_checkin(dbapi_con, con_record):
 class SQLAlchemy(FlaskSQLAlchemy):
 
     """Database object."""
-
-    PasswordComparator = PasswordComparator
 
     def init_app(self, app):
         """Init application."""
