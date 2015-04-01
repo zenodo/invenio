@@ -29,8 +29,12 @@ from flask import g, _request_ctx_stack, current_app
 from flask_babel import Babel, gettext
 
 from invenio.utils.datastructures import LaziestDict
+
 from .selectors import get_locale, get_timezone
 from .errors import NoCompiledTranslationError
+from .filters import filter_format_date, filter_format_datetime, \
+    filter_format_time, filter_format_timedelta, filter_to_utc, \
+    filter_to_user_timezone
 
 babel = Babel()
 
@@ -103,5 +107,15 @@ def setup_app(app):
     babel.init_app(app)
     babel.localeselector(get_locale)
     babel.timezoneselector(get_timezone)
+
     app.before_request(set_translations)
+
+    # Register template filters for date formatting
+    app.add_template_filter(filter_format_date, name="formatdate")
+    app.add_template_filter(filter_format_datetime, name="formatdatetime")
+    app.add_template_filter(filter_format_time, name="formattime")
+    app.add_template_filter(filter_format_timedelta, name="formattimedelta")
+    app.add_template_filter(filter_to_utc, name="toutc")
+    app.add_template_filter(filter_to_user_timezone, name="tousertimezone")
+
     return app
