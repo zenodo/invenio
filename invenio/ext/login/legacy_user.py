@@ -270,6 +270,10 @@ class UserInfo(CombinedMultiDict, UserMixin):
         """Check if user is active."""
         return not self.is_guest
 
+    def is_confirmed(self):
+        """Return true if accounts has been confirmed."""
+        return self['note'] == "1"
+
     @property
     def is_guest(self):
         """Check if user is guest."""

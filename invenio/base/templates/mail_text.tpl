@@ -24,11 +24,9 @@
 {% endblock -%}
 {%- block mail_footer %}
 {% if footer %}{{ footer }}{% else %}
-
-
 {{ _("Best regards") }}
 --
 {{ config.CFG_SITE_NAME_INTL.get(g.ln, config.CFG_SITE_NAME) }} <{{ config.CFG_SITE_URL }}>
 {{ _("Need human intervention?  Contact") }} <{{ config.CFG_SITE_SUPPORT_EMAIL }}>
-{% endif %}
+{% endif -%}
 {% endblock -%}
