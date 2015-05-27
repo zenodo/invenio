@@ -129,8 +129,8 @@ class User(db.Model):
 
     def verify_email(self, force=False):
         """Verify email address."""
-        if force or self.note == "2":
-            if self.note != "2":
+        if force or str(self.note) == "2":
+            if str(self.note) != "2":
                 self.note = 2
                 db.session.commit()
             send_account_activation_email(self)
