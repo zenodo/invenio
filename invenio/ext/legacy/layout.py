@@ -213,7 +213,7 @@ class WebInterfaceInvenio(WebInterfaceSearchInterfacePages):
                                               WebInterfaceDisabledPages)()
 
     _mapping = dict(
-        submit='WebInterfaceSubmitPages',
+        #submit='WebInterfaceSubmitPages',
         youraccount='WebInterfaceYourAccountPages',
         youralerts='WebInterfaceYourAlertsPages',
         yourbaskets='WebInterfaceYourBasketsPages',

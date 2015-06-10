@@ -234,8 +234,8 @@ class WebInterfaceFilesPages(WebInterfaceDirectory):
                             register_exception(req=req, alert_admin=True)
 
             # Prevent leaking of restricted file names
-            from flask import abort
-            abort(apache.HTTP_NOT_FOUND)
+            req.status = apache.HTTP_NOT_FOUND
+            return
 
             if docname and docformat and not warn:
                 req.status = apache.HTTP_NOT_FOUND

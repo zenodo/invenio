@@ -142,9 +142,13 @@ def setup_app(app):
             response = legacy_application(request.environ, g.start_response)
             if not isinstance(response, BaseResponse):
                 response = current_app.make_response(str(response))
-            return response
+            if response.status_code == 404:
+                return render_template('404.html'), 404
+            else:
+                return response
         except HTTPException as e:
-            current_app.logger.exception(request.path)
+            if e.code != 404:
+                current_app.logger.exception(request.path)
             error = e
         if error.code == 404:
             return render_template('404.html'), 404
