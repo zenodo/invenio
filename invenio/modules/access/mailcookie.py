@@ -29,6 +29,8 @@ from datetime import datetime, timedelta
 
 from invenio.ext.sqlalchemy import db
 
+from sqlalchemy.orm.exc import NoResultFound
+
 from .errors import InvenioWebAccessMailCookieError
 from .models import AccMAILCOOKIE, User
 
@@ -165,7 +167,7 @@ def mail_cookie_check_authorize_action(cookie):
         (kind, params) = mail_cookie_check_common(cookie)
         assert(kind == 'authorize_action')
         return params
-    except (TypeError, AssertionError):
+    except (TypeError, AssertionError, NoResultFound):
         raise InvenioWebAccessMailCookieError
 
 

@@ -105,8 +105,11 @@ class AccMAILCOOKIE(db.Model):
     @classmethod
     def get(cls, cookie, delete=False):
         """Get cookie if it is valid."""
-        password = cookie[:16]+cookie[-16:]
-        cookie_id = int(cookie[16:-16], 16)
+        try:
+            password = cookie[:16]+cookie[-16:]
+            cookie_id = int(cookie[16:-16], 16)
+        except ValueError:
+            raise InvenioWebAccessMailCookieError("Cookie is corrupted")
 
         obj, data = db.session.query(
             cls,
