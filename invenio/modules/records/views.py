@@ -146,8 +146,17 @@ def metadata(recid, of='hd', ot=None):
     from invenio.legacy.bibrank.downloads_similarity import \
         register_page_view_event
     from invenio.modules.formatter import get_output_format_content_type
+    from invenio.modules.formatter.engine import get_output_format, \
+        InvenioBibFormatError
     register_page_view_event(recid, current_user.get_id(),
                              str(request.remote_addr))
+
+    try:
+        get_output_format(of or request.args.get('of'))
+    except InvenioBibFormatError:
+        # Needed to prevent propagation to legacy pages.
+        return render_template('404.html'), 404
+
     if get_output_format_content_type(of) != 'text/html':
         from invenio.modules.search.views.search import \
             response_formated_records
