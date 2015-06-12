@@ -218,11 +218,11 @@ def intoDB(dic, date, rank_method_code):
 def fromDB(rank_method_code):
     """Get the data for a rank method"""
     id = run_sql("SELECT id from rnkMETHOD where name=%s", (rank_method_code, ))
-    res = run_sql("SELECT relevance_data FROM rnkMETHODDATA WHERE id_rnkMETHOD=%s", (id[0][0], ))
-    if res:
-        return deserialize_via_marshal(res[0][0])
-    else:
-        return {}
+    if id:
+        res = run_sql("SELECT relevance_data FROM rnkMETHODDATA WHERE id_rnkMETHOD=%s", (id[0][0], ))
+        if res:
+            return deserialize_via_marshal(res[0][0])
+    return {}
 
 def del_rank_method_codeDATA(rank_method_code):
     """Delete the data for a rank method"""
