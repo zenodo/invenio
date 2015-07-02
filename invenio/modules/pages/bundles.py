@@ -10,11 +10,21 @@
 #
 # Invenio is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-"""Pages module tests."""
+"""Pages bundles."""
+
+from invenio.base.bundles import invenio as _i, jquery as _j
+from invenio.ext.assets import Bundle, RequireJSFilter
+
+edit_js = Bundle(
+    "js/pages/edit.js",
+    output="edit_pages.js",
+    filters=RequireJSFilter(exclude=[_j, _i]),
+    weight=51
+)

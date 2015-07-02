@@ -16,24 +16,32 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-"""Views for Pages module."""
+"""Pages module views."""
 
-import six
-
-from flask import Blueprint, request, render_template, current_app
+from flask import Blueprint, current_app, render_template, request
 from flask.ctx import after_this_request
-from sqlalchemy import event
-from sqlalchemy.orm.exc import NoResultFound
-from werkzeug.exceptions import NotFound
 
 from invenio.base.globals import cfg
-from invenio.ext.sqlalchemy import db
 from invenio.base.signals import before_handle_user_exception
+from invenio.ext.sqlalchemy import db
 # from invenio.ext.cache import cache
 from invenio.modules.pages.models import Page
 
-blueprint = Blueprint('pages', __name__, url_prefix='/',
-                      template_folder='templates')
+import six
+
+from sqlalchemy import event
+from sqlalchemy.orm.exc import NoResultFound
+
+from werkzeug.exceptions import NotFound
+
+
+blueprint = Blueprint(
+    'pages',
+    __name__,
+    url_prefix='/',
+    template_folder='templates',
+    static_folder='static',
+)
 
 
 @blueprint.before_app_first_request
@@ -41,7 +49,7 @@ def register():
     """Register all pages before the first application request."""
     try:
         _add_url_rule([page.url for page in Page.query.all()])
-    except:
+    except Exception:
         current_app.logger.warn('Pages were not loaded.')
 
 
@@ -81,6 +89,7 @@ def render_page(path):
     """Internal interface to the page view."""
     page = Page.query.filter(db.or_(Page.url == request.path,
                                     Page.url == request.path + "/")).first()
+
     return render_template([page.template_name, cfg['PAGES_DEFAULT_TEMPLATE']],
                            page=page)
 

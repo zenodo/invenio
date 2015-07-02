@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of Invenio.
-# Copyright (C) 2014 CERN.
+# Copyright (C) 2014, 2015 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -16,25 +16,41 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-from jinja2 import TemplateNotFound
-from flask import current_app
-from wtforms.validators import ValidationError
+"""Pages module admin views."""
 
+from flask import current_app
+
+from invenio.base.globals import cfg
 from invenio.ext.admin.views import ModelView
 from invenio.ext.sqlalchemy import db
-from invenio.modules.pages.models import Page
+from invenio.modules.pages.models import Page, PageList
+
+from jinja2 import TemplateNotFound
+
+from werkzeug.local import LocalProxy
+
+from wtforms import IntegerField, TextAreaField
+from wtforms.validators import DataRequired, ValidationError
 
 
 def template_exists(form, field):
-    """ Form validation: check that selected template exists """
-    template_name = "pages/" + field.data
+    """Check selected template existance."""
     try:
-        current_app.jinja_env.get_template(template_name)
+        current_app.jinja_env.get_template(field.data)
     except TemplateNotFound:
-        raise ValidationError("Template selected does not exist")
+        raise ValidationError("Selected template does not exist.")
+
+
+def same_page_choosen(form, field):
+    """Check that we are not trying to assign list page itself as a child."""
+    if form._obj is not None:
+        if field.data.id == form._obj.list_id:
+            raise ValidationError(
+                'You cannot assign list page itself as a child.')
 
 
 class PagesAdmin(ModelView):
+    """Page model admin view."""
     _can_create = True
     _can_edit = True
     _can_delete = True
@@ -46,35 +62,51 @@ class PagesAdmin(ModelView):
         'url', 'title', 'last_modified',
     )
     column_searchable_list = ('url',)
+    column_labels = dict(url='URL')
 
     page_size = 100
 
+    form_excluded_columns = ('lists')
     form_args = dict(
         template_name=dict(
-            validators=[template_exists]
-        ))
+            default=LocalProxy(
+                lambda: cfg["PAGES_DEFAULT_TEMPLATE"]),
+            description=LocalProxy(
+                lambda: "Default: %s" % cfg["PAGES_DEFAULT_TEMPLATE"]),
+            validators=[DataRequired(), template_exists]
+        ),
+    )
+    form_widget_args = {
+        'created': {
+            'style': 'pointer-events: none;',
+            'readonly': True
+        },
+        'last_modified': {
+            'style': 'pointer-events: none;',
+            'readonly': True
+        },
+    }
+    form_overrides = dict(content=TextAreaField, description=TextAreaField)
 
-    #FIXME if we want to prevent users from modifying the dates
-    # form_widget_args = {
-    #     'created': {
-    #         'type': "hidden"
-    #     },
-    #     'last_modified': {
-    #         'type': "hidden"
-    #     },
-    # }
+    inline_models = [
+        (PageList, {
+            'form_columns': ['id', 'order', 'page'],
+            'form_overrides': {'order': IntegerField},
+            'form_args': {'page': {'validators': [same_page_choosen]}}
+        })
+    ]
 
     def __init__(self, model, session, **kwargs):
+        """Initialize PagesAdmin."""
         super(PagesAdmin, self).__init__(
             model, session, **kwargs
         )
 
 
 def register_admin(app, admin):
-    """
-    Called on app initialization to register administration interface.
-    """
+    """Called on app initialization to register administration interface."""
     admin.add_view(PagesAdmin(
         Page, db.session,
-        name='Pages', category="")
+        name='Pages',
+        category='')
     )
