@@ -22,7 +22,7 @@ from werkzeug import MultiDict
 from invenio.utils.datacite import DataciteMetadata
 from invenio.utils.sherpa_romeo import SherpaRomeoSearch
 from invenio.modules.records.api import get_record
-from invenio.utils import persistentid as pidutils
+import idutils
 
 #
 # General purpose processors
@@ -60,7 +60,7 @@ class PidSchemeDetection(object):
 
     def __call__(self, form, field, submit=False, fields=None):
         if field.data:
-            schemes = pidutils.detect_identifier_schemes(field.data)
+            schemes = idutils.detect_identifier_schemes(field.data)
             if schemes:
                 getattr(form, self.set_field).data = schemes[0]
             else:
@@ -82,12 +82,12 @@ class PidNormalize(object):
         elif self.scheme:
             scheme = self.scheme
         else:
-            schemes = pidutils.detect_identifier_schemes(field.data)
+            schemes = idutils.detect_identifier_schemes(field.data)
             if schemes:
                 scheme = schemes[0]
         if scheme:
             if field.data:
-                field.data = pidutils.normalize_pid(field.data, scheme=scheme)
+                field.data = idutils.normalize_pid(field.data, scheme=scheme)
 
 
 #

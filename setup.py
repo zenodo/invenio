@@ -96,6 +96,7 @@ install_requires = [
     "Flask-SQLAlchemy>=2.0",
     "Flask-WTF>=0.10.2",
     "fs>=0.4",
+    "idutils>=0.1.0",
     "intbitset>=2.0",
     "invenio-client>=0.1.0",
     "jellyfish>=0.3.2",

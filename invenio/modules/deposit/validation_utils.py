@@ -23,7 +23,7 @@ import re
 
 from flask import current_app
 
-from invenio.utils import persistentid as pidutils
+import idutils
 
 import six
 
@@ -304,7 +304,7 @@ class PidValidator(object):
 
     def __call__(self, form, field):
         """Validate."""
-        schemes = pidutils.detect_identifier_schemes(field.data)
+        schemes = idutils.detect_identifier_schemes(field.data)
         if not schemes:
             raise ValidationError(self.message)
 
