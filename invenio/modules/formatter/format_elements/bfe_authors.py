@@ -45,7 +45,8 @@ def format_element(bfo, limit, separator=' ; ',
                    orcid_type="text",
                    orcid_text="no",
                    orcid_prefix="[",
-                   orcid_postfix="]"):
+                   orcid_postfix="]",
+                   only_main_authors=False):
     """
     Print the list of authors of a record.
 
@@ -67,6 +68,7 @@ def format_element(bfo, limit, separator=' ; ',
     @param orcid_text: text to put in a link, if left blank it will use an ORCID
     @param orcid_prefix: prefix for link and plain text
     @param orcid_postfix: postfix for link and plain text
+    @param only_main_authors: include only main authors in the output
     """
     CFG_BASE_URL = cfg['CFG_BASE_URL'].encode('utf-8')
     CFG_SITE_RECORD = cfg['CFG_BASE_URL'].encode('utf-8')
@@ -77,12 +79,12 @@ def format_element(bfo, limit, separator=' ; ',
         CFG_BIBAUTHORITY_PREFIX_SEP
 
     _ = gettext_set_language(bfo.lang)    # load the right message language
-
     authors = []
     authors_1 = bfo.fields('100__', repeatable_subfields_p=True)
-    authors_2 = bfo.fields('700__', repeatable_subfields_p=True)
-
     authors.extend(authors_1)
+    authors_2 = bfo.fields('700__', repeatable_subfields_p=True)
+    if only_main_authors:
+        authors_2 = filter(lambda author: '4' not in author, authors_2)
     authors.extend(authors_2)
 
     # make unique string per key
