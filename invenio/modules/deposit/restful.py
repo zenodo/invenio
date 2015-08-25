@@ -19,23 +19,23 @@
 
 """Deposit REST API."""
 
-from flask import request
-from flask_restful import Resource, abort, reqparse
-from flask_login import current_user
 from functools import wraps
-from werkzeug.utils import secure_filename
-
-from invenio.ext.restful import require_api_auth, error_codes, \
-    require_oauth_scopes, require_header
-from invenio.modules.deposit.models import Deposition, \
-    DepositionFile, InvalidDepositionType, DepositionDoesNotExists, \
-    DraftDoesNotExists, FormDoesNotExists, DepositionNotDeletable, \
-    InvalidApiAction, FilenameAlreadyExists, \
-    FileDoesNotExists, ForbiddenAction, DepositionError
-from invenio.modules.deposit.storage import \
-    DepositionStorage, UploadError
+from json import dumps
 
 from cerberus import Validator
+from flask import Response, request, stream_with_context
+from flask_login import current_user
+from flask_restful import Resource, abort, reqparse
+from werkzeug.utils import secure_filename
+
+from invenio.ext.restful import error_codes, require_api_auth, \
+    require_header, require_oauth_scopes
+from invenio.modules.deposit.models import Deposition, \
+    DepositionDoesNotExists, DepositionError, DepositionFile, \
+    DepositionNotDeletable, DraftDoesNotExists, FileDoesNotExists, \
+    FilenameAlreadyExists, ForbiddenAction, FormDoesNotExists, \
+    InvalidApiAction, InvalidDepositionType
+from invenio.modules.deposit.storage import DepositionStorage, UploadError
 
 
 class APIValidator(Validator):
@@ -240,7 +240,22 @@ class DepositionListResource(Resource, InputProcessorMixin):
         result = Deposition.get_depositions(
             user=current_user, type=args['type'] or None
         )
-        return map(lambda o: o.marshal(), result)
+
+        # Stream response
+        def generator():
+            yield "["
+            for i, o in enumerate(result):
+                if i == 0:
+                    yield dumps(o.marshal())
+                else:
+                    yield "," + dumps(o.marshal())
+            yield "]"
+
+        return Response(
+            stream_with_context(generator()),
+            status=200,
+            mimetype="application/json"
+        )
 
     @require_header('Content-Type', 'application/json')
     @require_oauth_scopes('deposit:write')

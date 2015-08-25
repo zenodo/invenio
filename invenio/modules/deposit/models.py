@@ -1388,6 +1388,7 @@ class Deposition(object):
 
     @classmethod
     def get_depositions(cls, user=None, type=None):
+        """Get list of depositions (as iterator)."""
         params = [
             Workflow.module_name == 'webdeposit',
         ]
@@ -1402,7 +1403,7 @@ class Deposition(object):
 
         objects = BibWorkflowObject.query.join("workflow").options(
             db.contains_eager('workflow')).filter(*params).order_by(
-            BibWorkflowObject.modified.desc()).all()
+            BibWorkflowObject.modified.desc())
 
         def _create_obj(o):
             try:
@@ -1414,7 +1415,13 @@ class Deposition(object):
                 return obj
             return None
 
-        return filter(lambda x: x is not None, map(_create_obj, objects))
+        def mapper_filter(objs):
+            for o in objs:
+                o = _create_obj(o)
+                if o is not None:
+                    yield o
+
+        return mapper_filter(objects)
 
 
 class SubmissionInformationPackage(FactoryMixin):
