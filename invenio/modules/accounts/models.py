@@ -31,7 +31,7 @@ from invenio.ext.passlib import password_context
 from invenio.ext.passlib.hash import invenio_aes_encrypted_email
 
 from .errors import AccountSecurityError, IntegrityUsergroupError
-from .signals import profile_updated
+from .signals import profile_updated, user_activated, user_inactivated
 from .helpers import send_account_activation_email
 
 
@@ -134,6 +134,24 @@ class User(db.Model):
                 self.note = 2
                 db.session.commit()
             send_account_activation_email(self)
+            return True
+        return False
+
+    def activate(self):
+        """Activate a user."""
+        if str(self.note) != "1":
+            self.note = "1"
+            db.session.commit()
+            user_activated.send(sender=self.id, user=self)
+            return True
+        return False
+
+    def inactivate(self):
+        """Inactivate a user."""
+        if str(self.note) != "0":
+            self.note = "0"
+            db.session.commit()
+            user_activated.send(sender=self.id, user=self)
             return True
         return False
 

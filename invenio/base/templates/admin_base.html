@@ -52,3 +52,7 @@
 {% endblock %}
 
 {% block title %}{% endblock %}
+
+{%- block javascript %}{{ super() }}
+{% block tail %}{% endblock tail %}
+{% endblock %}

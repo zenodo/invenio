@@ -40,3 +40,11 @@ Example subscriber
         sender=''
     )
 """
+
+
+user_inactivated = _signals.signal('user-inactivated')
+"""Signal sent when a user is inactivated."""
+
+
+user_activated = _signals.signal('user-activated')
+"""Signal sent when a user is activated."""
