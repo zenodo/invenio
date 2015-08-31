@@ -1,0 +1,15 @@
+{% extends 'admin/model/details.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block navlinks %}
+{{super()}}
+{%- set user_id = get_value(model, 'id') %}
+{%- set user_email = get_value(model, 'email') %}
+<ul class="nav nav-pills nav-justified">
+<li><a href="{{url_for('userext.index_view', flt3_16=user_email )}}">View identities</a></li>
+<li><a href="{{url_for('search.search', p='8560_w:%s' % user_id)}}">View records</a></li>
+<li><a href="{{url_for('bibworkflowobject.index_view', flt3_2=user_email)}}">View deposits</a></li>
+<li><a href="{{url_for('resourceusage.index_view', flt0_2='User', flt3_9=user_id)}}">View metrics</a></li>
+<li><a href="{{url_for('Communities.index_view', flt2_9=user_email)}}">View communities</a></li>
+</ul>
+{% endblock %}

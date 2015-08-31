@@ -47,15 +47,37 @@ class AccMixin(object):
     acc_delete_action = 'cfgwebaccess'
 
 
-class UserEXTInlineModelForm(InlineFormAdmin):
+class UserEXTAdmin(ModelView, AccMixin):
 
     """Inline admin for UserEXT."""
-    form_columns = ('method', 'id')
+
+    _can_create = False
+    _can_edit = False
+    _can_delete = True
+    can_view_details = True
+
+    column_list = (
+        'method', 'id', 'user'
+    )
+
+    column_details_list = ('method', 'id', 'user')
+
+    column_searchable_list = (
+        'method', 'id', 'user.nickname', 'user.email',
+    )
+
+    column_filters = (
+        'method', 'user.nickname', 'user.email',
+    )
+
+    form_columns = ('method', 'id', )
 
 
 class UserAdmin(ModelView, AccMixin):
 
     """Flask-Admin view to manage users."""
+
+    can_view_details = True
 
     column_list = (
         'id', 'nickname', 'email', 'family_name', 'given_names',
@@ -79,7 +101,9 @@ class UserAdmin(ModelView, AccMixin):
         'last_login': DateTimeField
     }
 
-    inline_models = [UserEXTInlineModelForm(UserEXT)]
+    column_details_list = column_list
+
+    details_template = 'accounts/admin/details.html'
 
     @action('inactivate', 'Inactivate',
             'Are you sure you want to inactivate selected users?')
@@ -146,4 +170,7 @@ def register_admin(app, admin):
     category = "Accounts"
     admin.add_view(
         UserAdmin(User, db.session, name="Users", category=category)
+    )
+    admin.add_view(
+        UserEXTAdmin(UserEXT, db.session, name="Identities", category=category)
     )

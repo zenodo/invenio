@@ -30,6 +30,7 @@ from invenio.base.utils import classproperty
 from invenio.ext.logging import deprecated
 from invenio.ext.sqlalchemy import db
 from invenio.ext.sqlalchemy.utils import session_manager
+from invenio.modules.accounts.models import User
 
 from six import callable, iteritems
 from six.moves import cPickle
@@ -327,7 +328,8 @@ class BibWorkflowObject(db.Model):
     data_type = db.Column(db.String(150), default="",
                           nullable=True)
     uri = db.Column(db.String(500), default="")
-    id_user = db.Column(db.Integer, default=0, nullable=False)
+    id_user = db.Column(
+        db.Integer, db.ForeignKey(User.id), default=0, nullable=False)
 
     child_logs = db.relationship("BibWorkflowObjectLog",
                                  backref='bibworkflowobject',
@@ -335,6 +337,10 @@ class BibWorkflowObject(db.Model):
 
     workflow = db.relationship(
         Workflow, foreign_keys=[id_workflow], remote_side=Workflow.uuid,
+    )
+
+    user = db.relationship(
+        User, foreign_keys=[id_user], remote_side=User.id,
     )
 
     _log = None

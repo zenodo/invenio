@@ -29,17 +29,17 @@ class CommunitiesAdmin(ModelView):
 
     """Administrative view for communities."""
 
-    #acc_edit_action = 'cfgmymodel'
-
     _can_create = True
     _can_edit = True
     _can_delete = True
 
-    column_list = ('id', 'title', 'description', 'page', 'last_modified',
-                   'ranking', 'fixed_points')
+    column_list = (
+        'id', 'title', 'owner', 'last_modified', 'last_record_accepted',
+        'ranking', 'fixed_points',
+    )
     column_searchable_list = ('title',)
 
-    page_size = 100
+    column_filters = ('owner.nickname', 'owner.email', 'last_modified')
 
     def __init__(self, model, session, **kwargs):
         """Initialize administrative view for communities."""

@@ -1,0 +1,32 @@
+<p>
+<strong>{{obj.title}}</strong>
+{% if obj.get_latest_sip() %}
+{% set sip = obj.get_latest_sip() %}
+<a href="{{ url_for('record.metadata', recid=sip.metadata['recid'])}}">View record</a>{% endif %}
+</p>
+<p>
+<strong>Draft:</strong><br/>
+{% for v in obj.drafts.values() %}
+<pre>{{v.values}}</pre>
+{% endfor %}
+</p>
+<p>
+<strong>Submission Information Packages:</strong><br/>
+{% for s in obj.sips %}
+
+<i>{{s.uuid}} ({{s.timestamp}}):</i><br>
+<small class="text-muted">Agents: {% for a in s.agents %}{{a.user_id}} &lt;{{a.email_address}}&gt; ({{a.ip_address}}),{% endfor%}</small>
+<pre>{% for k in s.metadata.keys()|sort if not k.startswith('_') %}{{k}}: {{s.metadata[k]}}
+{% endfor %}
+</pre>
+<pre>{{s.package}}</pre>
+
+{% endfor %}
+</p>
+<p>
+<strong>Files:</strong><br/>
+{% for f in obj.files %}
+  {{f.name}} ({{f.size|filesizeformat}}) <small class="text-muted">Checksum: {{f.checksum}}, Path: {{f.path}}</small><br/>
+{% endfor %}
+
+<p>
