@@ -40,8 +40,9 @@ def get_user(username, password, *args, **kwargs):
     Needed for grant type 'password'. Note, grant type password is by default
     disabled.
     """
-    user = User.query.filter_by(username=username).first()
-    if user.check_password(password):
+    user = User.query.filter(
+        db.or_(User.nickname == username, User.email == username)).first()
+    if user.verify_password(password, migrate=True):
         return user
 
 
