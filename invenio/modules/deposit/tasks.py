@@ -177,9 +177,9 @@ def render_form(draft_id='_default'):
                     uuid=d.id,
                     draft=draft,
                     form=form,
-                    my_depositions=Deposition.get_depositions(
+                    my_depositions=list(Deposition.get_depositions(
                         current_user, type=d.type
-                    ),
+                    )),
                 ))
                 d.update()
                 eng.halt('Wait for form submission.')

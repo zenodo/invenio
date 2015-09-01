@@ -111,7 +111,7 @@ def index():
 
     ctx = dict(
         deposition_types=DepositionType.all(),
-        my_depositions=Deposition.get_depositions(current_user),
+        my_depositions=list(Deposition.get_depositions(current_user)),
         prefill_data=draft_cache.data,
     )
 
@@ -138,7 +138,8 @@ def deposition_type_index(deposition_type):
     draft_cache.save()
 
     ctx = dict(
-        my_depositions=Deposition.get_depositions(current_user, type=deptype),
+        my_depositions=list(
+            Deposition.get_depositions(current_user, type=deptype)),
         prefill_data=draft_cache.data,
         deposition_type=deptype
     )
