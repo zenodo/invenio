@@ -62,7 +62,7 @@
         </div>
         <h2>{{ featured_community.community.title }}</h2>
         <div>
-          {{ featured_community.community.description }}
+          {{ featured_community.community.description|safe }}
         </div>
         <p style="position: absolute; right:25px;">
           <a class="btn btn-info" href="{{ featured_community.community.community_url }}">{{ _("View") }}</a>
