@@ -21,7 +21,7 @@
 
 from flask_login import current_user
 
-from flask_wtf import Form, validators
+from flask_wtf import Form, validators, RecaptchaField
 
 from invenio.base.globals import cfg
 from invenio.base.i18n import _
@@ -249,6 +249,7 @@ class RegisterForm(Form):
         _("Confirm password"),
         validators=[password2_validator]
     )
+    recaptcha = RecaptchaField()
     referer = HiddenField()
     action = HiddenField(default='login')
     submit = SubmitField(_("Register"))

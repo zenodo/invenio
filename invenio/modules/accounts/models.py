@@ -142,7 +142,7 @@ class User(db.Model):
         if str(self.note) != "1":
             self.note = "1"
             db.session.commit()
-            user_activated.send(sender=self.id, user=self)
+            user_activated.send(self.id, user=self)
             return True
         return False
 
@@ -151,7 +151,7 @@ class User(db.Model):
         if str(self.note) != "0":
             self.note = "0"
             db.session.commit()
-            user_activated.send(sender=self.id, user=self)
+            user_inactivated.send(self.id, user=self)
             return True
         return False
 

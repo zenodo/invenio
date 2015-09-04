@@ -93,8 +93,15 @@ class UserAdmin(ModelView, AccMixin):
         'nickname', 'email', 'family_name', 'given_names', 'password_scheme',
     )
 
+    column_sortable_list = (
+        'id', 'nickname', 'email', 'family_name', 'given_names', 'note',
+        'last_login', 'password_scheme',
+    )
+
+    column_default_sort = ('last_login', True)
+
     column_filters = (
-        'note', 'password_scheme'
+        'nickname', 'email', 'note', 'password_scheme',  'last_login'
     )
 
     form_overrides = {
