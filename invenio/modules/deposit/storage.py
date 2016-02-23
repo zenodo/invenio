@@ -70,13 +70,12 @@ class ExternalFile(object):
         """Close the external file."""
         self._file.close()
 
-    def read(self):
+    def read(self, chunksize=65536):
         """Read the external file."""
-        return self._file.read()
+        return self._file.read(chunksize)
 
 
 class Storage(object):
-
     """Default storage backend."""
 
     _fsdir = None
