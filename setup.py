@@ -124,7 +124,7 @@ install_requires = [
     "rdflib>=4.1.2",
     "redis>=2.8.0",
     "reportlab>=2.7,<3.2",
-    "requests>=2.3,<2.4",
+    "requests>=2.3,<=2.7",
     "setuptools>=2.2",
     "six>=1.7.2",
     "Sphinx>=1.3",
