@@ -48,6 +48,7 @@ from intbitset import intbitset
 from invenio.ext.sqlalchemy import db
 from invenio.modules.access.models import AccAuthorization, AccACTION, \
                                     AccARGUMENT, UserAccROLE
+from sqlalchemy.orm import joinedload
 
 CFG_SUPERADMINROLE_ID = 0
 try:
@@ -1455,7 +1456,7 @@ def acc_find_possible_roles(name_action, always_add_superadmin=True, batch_args=
 
     acc_authorizations = query_roles_with_args.params(
         id_action=id_action
-    ).all()
+    ).options(joinedload('argument')).all()
 
     result = []
     for arguments in batch_arguments:
