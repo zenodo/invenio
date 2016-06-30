@@ -22,7 +22,7 @@ __revision__ = "$Id$"
 import cgi
 from urllib import quote
 
-from .control import acc_find_possible_roles, acc_is_user_in_any_role, acc_get_roles_emails
+from .control import acc_find_possible_roles, acc_is_user_in_any_role, acc_get_roles_emails, acc_get_user_roles_from_user_info
 from .local_config import CFG_WEBACCESS_WARNING_MSGS, CFG_WEBACCESS_MSGS
 from invenio.legacy.webuser import collect_user_info
 from invenio.modules.access.firerole import load_role_definition, acc_firerole_extract_emails
@@ -59,9 +59,12 @@ def acc_authorize_action(req, name_action, authorized_if_no_roles=False, batch_a
     if not batch_args:
         roles_list = [roles_list]
 
+    user_roles = acc_get_user_roles_from_user_info(user_info)
+
     result = []
     for roles in roles_list:
-        if acc_is_user_in_any_role(user_info, roles):
+        # acc_is_user_in_any_role(user_info, roles)
+        if user_roles & roles:
             ## User belong to at least one authorized role
             ## or User is SUPERADMIN
             ret_val = (0, CFG_WEBACCESS_WARNING_MSGS[0])

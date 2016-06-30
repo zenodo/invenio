@@ -1435,6 +1435,7 @@ def acc_find_possible_roles(name_action, always_add_superadmin=True, batch_args=
             join(AccAuthorization.argument)
 
     id_action = db.session.query(AccACTION.id).filter(AccACTION.name==name_action).scalar()
+
     roles = intbitset(
         db.engine.execute(query_roles_without_args.params(id_action=id_action)).\
             fetchall())
