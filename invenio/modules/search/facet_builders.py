@@ -51,6 +51,9 @@ def get_current_user_records_that_can_be_displayed(qid):
         data = search_results_cache.get(key)
         if data is None:
             return intbitset([])
+        results = intbitset().fastload(data)
+        if results is None:
+            return intbitset([])
         cc = search_results_cache.get(key + '::cc')
         return get_records_that_can_be_displayed(current_user,
                                                  intbitset().fastload(data),
